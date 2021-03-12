@@ -18,26 +18,24 @@ Similarword.prototype = {
   addEvent: function () {
     this.input.addEventListener('keyup', this.requestData.bind(this));
   },
-  requestData: async function () {
-    await delay(300);
+  requestData: function () {
     return this.fetchAPI.getSimilarword(this.input.value, similarword);
   },
   getGroupSuggestion: function (data) {
-    if (this.isEmpty(data.items)) {
-      return (this.wrapSuggestion.style.display = 'none');
-    }
-
-    if (this.isEmpty(this.input.value)) return;
-
-    this.wrapSuggestion.style.display = 'block';
     const groupSuggestion = data.items.reduce((acc, cur) => {
       const inputKeyword = data.q;
       const suggestionKeyword = cur.slice(0, -2);
       const suggestionKeywordIndex = suggestionKeyword.indexOf(inputKeyword);
+      let nonHighlightingFront = '';
+      let highlighting = '';
+      let nonHighlightingBack = '';
 
-      const nonHighlightingFront = suggestionKeyword.slice(0, suggestionKeywordIndex);
-      const highlighting = suggestionKeyword.slice(suggestionKeywordIndex, suggestionKeywordIndex + inputKeyword.length);
-      const nonHighlightingBack = suggestionKeyword.slice(suggestionKeywordIndex + inputKeyword.length);
+      if (this.isIncludes(suggestionKeyword, inputKeyword)) {
+        nonHighlightingFront = suggestionKeyword.slice(0, suggestionKeywordIndex);
+        highlighting = suggestionKeyword.slice(suggestionKeywordIndex, suggestionKeywordIndex + inputKeyword.length);
+        nonHighlightingBack = suggestionKeyword.slice(suggestionKeywordIndex + inputKeyword.length);
+      }
+      nonHighlightingFront = suggestionKeyword;
 
       acc += `
       <li>
@@ -49,11 +47,19 @@ Similarword.prototype = {
     return groupSuggestion;
   },
   drawGroupSuggestion: function (data) {
+    if (this.isEmpty(this.input.value)) return;
+    if (this.isEmpty(data.items)) {
+      return (this.wrapSuggestion.style.display = 'none');
+    }
     this.similarwordList.innerHTML = `${this.getGroupSuggestion(data)}`;
   },
 
   isEmpty: function (data) {
     return data.length === 0;
+  },
+
+  isIncludes: function (box, item) {
+    return box.includes(item);
   },
 };
 
