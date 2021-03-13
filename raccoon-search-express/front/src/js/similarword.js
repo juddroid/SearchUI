@@ -18,7 +18,7 @@ Similarword.prototype = {
   addEvent: function () {
     this.input.addEventListener('keyup', this.requestData.bind(this));
     this.input.addEventListener('keyup', this.selectKeyword.bind(this));
-    this.similarwordList.addEventListener('focus', this.changeListBackgorund.bind(this))
+    this.input.addEventListener('keyup', this.changeListBackgorund.bind(this))
   },
 
   requestData: function () {
@@ -71,8 +71,8 @@ Similarword.prototype = {
     }
   },
 
-  changeListBackgorund: function (e) {
-    const similarwordLists = e.currentTarget.querySelectorAll('li')
+  changeListBackgorund: function () {
+    const similarwordLists = this.similarwordList.querySelectorAll('li')
     console.log(similarwordLists[this.suggestionIdx].style.background = "#e5e5e5")
   },
 
