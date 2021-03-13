@@ -7,21 +7,19 @@ export default function Similarword() {
   this.wrapSuggestion = _.$('.wrap_suggestion');
   this.fetchAPI = new FetchAPI();
   this.suggestionIdx = -1;
+  this.keyEvent = true;
 }
 
-// 3. cursor를 위아래로 움직이면 css가 바뀐다.
-// 4. 1초 이상 아무 입력이 없으면 서버에서 데이터를 받아온다???
 // 추가미션. 최근 검색어 기능
 
 Similarword.prototype = {
-  constructor: Similarword,
   addEvent: function () {
-    this.input.addEventListener('keyup', this.requestData.bind(this));
     this.input.addEventListener('keyup', this.selectKeyword.bind(this));
-    // this.input.addEventListener('keyup', this.changeListBackgorund.bind(this))
+    this.input.addEventListener('keyup', this.requestData.bind(this));
   },
 
   requestData: function () {
+    if (!this.keyEvent) return;
     return this.fetchAPI.getSimilarword(this.input.value, similarword);
   },
   getGroupSuggestion: function (data) {
@@ -29,6 +27,7 @@ Similarword.prototype = {
       const inputKeyword = data.q;
       const suggestionKeyword = cur.slice(0, -2);
       const suggestionKeywordIndex = suggestionKeyword.indexOf(inputKeyword);
+
       let nonHighlightingFront = '';
       let highlighting = '';
       let nonHighlightingBack = '';
@@ -43,6 +42,7 @@ Similarword.prototype = {
 
       acc += `
       <li>
+        <span class="screen-out">${suggestionKeyword}</span>
         <a href="/" class="link_keyword">${nonHighlightingFront}<span class="emph_word">${highlighting}</span>${nonHighlightingBack}</a>
       </li>
     `;
@@ -60,15 +60,19 @@ Similarword.prototype = {
 
   selectKeyword: function (e) {
     if (e.key === 'ArrowDown') {
+      this.keyEvent = false;
       if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx++;
+      this.input.value = this.similarwordList.querySelectorAll('li')[this.suggestionIdx].querySelector('span').innerHTML;
       this.changeListBackgorund();
       console.log(e.key, this.suggestionIdx);
       return;
     }
     if (e.key === 'ArrowUp') {
+      this.keyEvent = false;
       if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx--;
+      this.input.value = this.similarwordList.querySelectorAll('li')[this.suggestionIdx].querySelector('span').innerHTML;
       this.changeListBackgorund();
       console.log(e.key, this.suggestionIdx);
       return;
@@ -77,7 +81,10 @@ Similarword.prototype = {
 
   changeListBackgorund: function () {
     const similarwordLists = this.similarwordList.querySelectorAll('li');
-    similarwordLists[this.suggestionIdx].style.background = '#e5e5e5';
+
+    similarwordLists.forEach((el) => el.removeAttribute('style'));
+
+    similarwordLists[this.suggestionIdx].style.background = '#eee';
   },
 
   isEmpty: function (data) {
