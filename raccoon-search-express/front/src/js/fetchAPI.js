@@ -1,3 +1,5 @@
+import { _ } from './const';
+
 export default class FetchAPI {
   constructor() {
     this.url = {
@@ -23,10 +25,15 @@ export default class FetchAPI {
 
   // 이건 fetch 아니다.
   getSimilarword = (string, callback) => {
+    const reqData = _.$('.reqData');
+    if (reqData) {
+      document.body.removeChild(reqData);
+    }
     const script = document.createElement('script');
     const param = { q: string };
     const queryParam = new URLSearchParams(param);
     script.src = `${this.url.slimilarword}?callback=${callback.name}&limit=10&mode=json&code=utf_in_out&${queryParam}&id=shoppinghow_suggest`;
+    script.className = `reqData`;
     document.body.append(script);
   };
 }

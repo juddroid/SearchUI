@@ -18,7 +18,7 @@ Similarword.prototype = {
   addEvent: function () {
     this.input.addEventListener('keyup', this.requestData.bind(this));
     this.input.addEventListener('keyup', this.selectKeyword.bind(this));
-    this.input.addEventListener('keyup', this.changeListBackgorund.bind(this))
+    // this.input.addEventListener('keyup', this.changeListBackgorund.bind(this))
   },
 
   requestData: function () {
@@ -62,18 +62,22 @@ Similarword.prototype = {
     if (e.key === 'ArrowDown') {
       if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx++;
+      this.changeListBackgorund();
       console.log(e.key, this.suggestionIdx);
+      return;
     }
     if (e.key === 'ArrowUp') {
       if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx--;
+      this.changeListBackgorund();
       console.log(e.key, this.suggestionIdx);
+      return;
     }
   },
 
   changeListBackgorund: function () {
-    const similarwordLists = this.similarwordList.querySelectorAll('li')
-    console.log(similarwordLists[this.suggestionIdx].style.background = "#e5e5e5")
+    const similarwordLists = this.similarwordList.querySelectorAll('li');
+    similarwordLists[this.suggestionIdx].style.background = '#e5e5e5';
   },
 
   isEmpty: function (data) {
