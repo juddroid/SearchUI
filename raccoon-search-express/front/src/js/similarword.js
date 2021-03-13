@@ -6,7 +6,7 @@ export default function Similarword() {
   this.similarwordList = _.$('.list_similarwords');
   this.wrapSuggestion = _.$('.wrap_suggestion');
   this.fetchAPI = new FetchAPI();
-  this.suggestionIdx = 0;
+  this.suggestionIdx = -1;
 }
 
 // 3. cursor를 위아래로 움직이면 css가 바뀐다.
@@ -17,7 +17,8 @@ Similarword.prototype = {
   constructor: Similarword,
   addEvent: function () {
     this.input.addEventListener('keyup', this.requestData.bind(this));
-    this.input.addEventListener('keyup', this.selectKeyword);
+    this.input.addEventListener('keyup', this.selectKeyword.bind(this));
+    this.similarwordList.addEventListener('focus', this.changeListBackgorund.bind(this))
   },
 
   requestData: function () {
@@ -59,15 +60,20 @@ Similarword.prototype = {
 
   selectKeyword: function (e) {
     if (e.key === 'ArrowDown') {
-      if (this.isEdge()) return;
+      if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx++;
       console.log(e.key, this.suggestionIdx);
     }
     if (e.key === 'ArrowUp') {
-      if (this.isEdge()) return;
+      if (this.isEdge(this.suggestionIdx)) return;
       this.suggestionIdx--;
       console.log(e.key, this.suggestionIdx);
     }
+  },
+
+  changeListBackgorund: function (e) {
+    const similarwordLists = e.currentTarget.querySelectorAll('li')
+    console.log(similarwordLists[this.suggestionIdx].style.background = "#e5e5e5")
   },
 
   isEmpty: function (data) {
@@ -79,7 +85,7 @@ Similarword.prototype = {
   },
 
   isEdge: function (idx) {
-    return idx === -1 || idx === 10;
+    return idx === -2 || idx === 10;
   },
 };
 
